@@ -15,19 +15,17 @@ from collections import Counter
 import glob
 from riskdict import RiskDict
 
+def del_cid(line):
+    if line.count('cid') > 10:
+        return ''
+    return line
 
 def load_txt(filepath):
     with open(filepath,'r',encoding = 'utf8') as f:
         lines = f.readlines()
-    #print(lines)
     lines = [del_cid(line) for line in lines]
-    #print(lines)
     lines = [re.sub(' ','',line.strip()) for line in lines if line.strip()]
-    #print(lines[:1])
-    #print(lines[1:])
-    return lines[:1],lines[1:]    #为什么分成两部分？？？？？？
-print(load_txt('news_connect_keywords.csv'))
-
+    return lines[:1],lines[1:]
 
 class RiskDictError(KeyError):
     pass
@@ -42,7 +40,7 @@ def check_risk_dict(riskdict): #,
             if [x for x in ['type','title','abstract'] if not x in keys]:
                 raise RiskDictError('{}: missing key(s)'.format(typ))
 
-#check_risk_dict(RiskDict)
+check_risk_dict(RiskDict)
 
 def type_match(lines,riskdict):
     type_list = []
@@ -126,10 +124,8 @@ def write_into_files(risk_list,filepath,outdir):
     f = csv.reader(open(filepath,'r'))
     news=[]
     for line in f :
-      news.append(line[0])
-    print(news)
+      news.append(line[0]) 
     data=pd.DataFrame(news)
-    #print(data)
     data["type"]=risk_list
     data.to_csv(outdir,encoding='utf_8_sig')  
 
@@ -139,13 +135,13 @@ def text_to_risk2(filepath,riskdict=RiskDict):
     risklist=[]
     for lines in f:
         type_list = read_type(lines[1],riskdict)
-        print(type_list)
+#    print(type_list)
 #        title_risks = detect_risk(lines,riskdict,type_list,'title')
 #    print(title_risks)
         fulltext_risks = detect_risk(lines[1],riskdict,type_list,'title')
 #    print(abstract_risks)
         fulltext_risks = rank_risks(fulltext_risks)
-        print(fulltext_risks)
+#    print(fulltext_risks)
         if type_list == ['风险新闻'] and not fulltext_risks:
             fulltext_risks = ['风险新闻(具体类别未匹配成功)']
         if not fulltext_risks:
@@ -153,8 +149,6 @@ def text_to_risk2(filepath,riskdict=RiskDict):
 #        write_into_files(lines[0],fulltext_risks,filepath,outdir)
         risklist.append(fulltext_risks)
     return risklist
-
-print(text_to_risk2('news_connect_keywords.csv', RiskDict))
 
 def text_to_risk(title,abstract,riskdict=RiskDict):
     title = re.sub(' ','',title)
@@ -174,29 +168,15 @@ def text_to_risk(title,abstract,riskdict=RiskDict):
         fulltext_risks = ['Unknown']
     return ';'.join(fulltext_risks)
     
-# if __name__ == '__main__':
-#
-# #    title = sys.argv[1]
-# #    abstract = sys.argv[2]
-#     filepath='news_connect_keywords.csv'
-#
-#     outdir='risk_stocks.csv'
-#     risk_list=text_to_risk2(filepath,RiskDict)
-#     write_into_files(risk_list,filepath,outdir)
+if __name__ == '__main__':
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+#    title = sys.argv[1]
+#    abstract = sys.argv[2]
+    filepath='/Users/cc/Desktop/cc/wk/risk/news/news_connect_keywords.csv'
+   
+    outdir='/Users/cc/Desktop/cc/wk/risk/news/risk_stocks.csv'
+    risk_list=text_to_risk2(filepath,RiskDict)
+    write_into_files(risk_list,filepath,outdir)
 #    filefolder = '/Users/sensedealmba/Documents/sensedeal/data/title_n_ks'
 #    outdir = '/Users/sensedealmba/Documents/sensedeal/test/risk/risk'
 #    filelist = glob.glob(filefolder+'/*.txt')
