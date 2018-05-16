@@ -22,9 +22,7 @@ import csv
 # print(texts)
 
 
-csv_keyword = csv.reader(open('Keyword.csv', 'r'))
-
-
+#csv_keyword = csv.reader(open('Keyword.csv', 'r'))
 # keyword_dict = {}
 # for row in csv_keyword:
 #     keyword_dict[row[1]] = row[2:]
@@ -35,11 +33,35 @@ csv_keyword = csv.reader(open('Keyword.csv', 'r'))
 #     if '中国动力' in value:
 #         print(key, value)
 
+
+
+
+csv_keyword = csv.reader(open('Keyword.csv', 'r'))
 keywords = []
 for row in csv_keyword:
     keywords.append(row)
 print(keywords)
 
 for i in range(len(keywords)):
-    if '证券' in keywords[i][2]:
+    if '新华网' in keywords[i][2]:
         print(keywords[i])
+
+csv_news_keywords = csv.reader(open('news_connect_keywords.csv', 'r'))
+texts = []
+for row in csv_news_keywords:
+    text = {}
+    text['id'] = row[0]
+    text['content'] = row[1]
+    text['stoc_id'] = row[2]
+    text['counts'] = row[3]
+    texts.append(text)
+print(texts)
+
+for i in range(len(texts)):
+    stoc_id = texts[i]['stoc_id']
+    if '603888' in stoc_id:
+        print(texts[i])
+
+
+
+
